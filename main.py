@@ -19,34 +19,65 @@ service = Service(ChromeDriverManager().install())
 
 # Initialize driver properly
 driver = webdriver.Chrome(service=service, options=options)
+#game_name = "coral island"
+game_names = ["coral island", "pentiment", "Coral islaAd", "firewatch", "soma"]
+# with open("./games_list", "r") as file:
+#     game_names = [line.strip() for line in file]
+#     print(game_names)
+for game_name in game_names:
+    search_url = f"https://store.playstation.com/en-pl/search/"+game_name 
+    driver.get(search_url)
+    game_url = driver.find_element(By.XPATH, '//div[@data-qa-index="0"]//div[@data-qa="search#productTile0"]//a[@data-qa=""]').get_attribute("href")
+    print(game_url)
+    driver.get(game_url)
+    time.sleep(2)
+    game_title = driver.find_element(By.XPATH, '//h1[@data-qa="mfe-game-title#name"]').text
 
-# Load the URL
-url = f"https://store.playstation.com/en-pl/product/EP3717-PPSA17226_00-CORALISLANDPS5EU"
-#url = f"https://store.playstation.com/en-pl/product/EP6311-PPSA16616_00-PLATITUDE0000000"
-driver.get(url)
-time.sleep(2)  # Optional wait to ensure page loads
+    try: 
+        current_price = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer0#finalPrice"]').text
+    except NoSuchElementException: 
+        current_price = 'N/A'
 
-# Extract product details
+    try: 
+        final_price = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer1#finalPrice"]').text
+    except NoSuchElementException: 
+        final_price = 'N/A'
 
+    try: 
+        normal_price = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer0#originalPrice"]').text
+    except NoSuchElementException: 
+        normal_price = 'N/A'
 
-try: 
-    is_included = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer0#finalPrice"]').text
-except NoSuchElementException: 
-    is_included = 'N/A'
+    if current_price == 'Included':
+        is_included = 'Yes'
+    else: 
+        is_included = 'No'
 
-try: 
-    final_price = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer1#finalPrice"]').text
-except NoSuchElementException: 
-    final_price = 'N/A'
+    try: 
+        current_price_float = float(current_price.replace("zl", "").replace(",", "."))
+    except ValueError:
+        current_price_float = 0.00
 
-try: 
-    normal_price = driver.find_element(By.XPATH, '//span[@data-qa="mfeCtaMain#offer0#originalPrice"]').text
-except NoSuchElementException: 
-    normal_price = 'N/A'
+    try: 
+        final_price_float = float(final_price.replace("zl", "").replace(",", "."))
+    except ValueError:
+        final_price_float = 0.00
+
+    try: 
+        normal_price_float = float(normal_price.replace("zl", "").replace(",", "."))
+    except ValueError:
+        normal_price_float = 0.00
+
+    prices = sorted([current_price_float, final_price_float, normal_price_float])
+
+    if prices[1] != 0.00:
+        discount = round(((prices[1]/max(prices)) * 100), 0)
+    else: 
+        discount = 0
+
     
-print(is_included, final_price, normal_price)
+    print(game_title, is_included, discount, current_price, final_price, normal_price)
+
+# TODO: add discount expiration date
 driver.quit()
 
-# Display extracted data
-# for row in element_list:
-#     print(row)
