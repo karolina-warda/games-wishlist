@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
+import csv
 
 def get_element(url):
     try: 
@@ -34,22 +35,27 @@ service = Service(ChromeDriverManager().install())
 # Initialize driver properly
 driver = webdriver.Chrome(service=service, options=options)
 
-games_data = []
+games_data_upload = []
 
-#game_name = "coral island"
-#game_names = ["coral island", "The walking dead"]
-with open("./games_list", "r") as file:
-    game_names = [line.strip() for line in file]
-    print(game_names)
-for game_name in game_names:
-    search_url = f"https://store.playstation.com/en-pl/search/"+game_name 
-    driver.get(search_url)
-    game_url = driver.find_element(By.XPATH, '//div[@data-qa-index="0"]//div[@data-qa="search#productTile0"]//a[@data-qa=""]').get_attribute("href")
-    #print(game_url)
+with open("./games_data.csv", mode ='r') as file: 
+    csvFile = csv.DictReader(file)
+    games_data = [line for line in csvFile] 
+
+for game_data in games_data:
+    search_url = f"https://store.playstation.com/en-pl/search/"+game_data["searched_title"]
+
+    if game_data["game_url"] == 'N/A':
+        driver.get(search_url)
+        game_url = driver.find_element(By.XPATH, '//div[@data-qa-index="0"]//div[@data-qa="search#productTile0"]//a[@data-qa=""]').get_attribute("href")
+    else: 
+        game_url = game_data["game_url"]
+
+    print(game_url)
+
     driver.get(game_url)
     time.sleep(2)
-    game_title = get_element('//h1[@data-qa="mfe-game-title#name"]')
 
+    game_title = get_element('//h1[@data-qa="mfe-game-title#name"]')
     current_price = get_element('//span[@data-qa="mfeCtaMain#offer0#finalPrice"]')
     final_price = get_element('//span[@data-qa="mfeCtaMain#offer1#finalPrice"]')
     normal_price = get_element('//span[@data-qa="mfeCtaMain#offer0#originalPrice"]')
@@ -75,7 +81,7 @@ for game_name in game_names:
     else:
         discount_expiration = get_element('//span[@data-qa="mfeCtaMain#offer0#discountDescriptor"]')
     
-    game_dict = {"serached_title":game_name,
+    game_dict = {"searched_title":game_data["searched_title"],
                 "game_title":game_title, 
                  "is_included":is_included, 
                  "discount":discount, 
@@ -85,10 +91,10 @@ for game_name in game_names:
                  "normal_price":normal_price,
                  "game_url":game_url}
     
-    games_data.append(game_dict)
-    #print(game_title, is_included, discount, discount_expiration, current_price, final_price, normal_price)
+    games_data_upload.append(game_dict)
+    print(game_dict)
 
-df=pd.json_normalize(games_data)
+df=pd.json_normalize(games_data_upload)
 df.to_csv('games_data.csv', encoding='utf-8', index=False)
 driver.quit()
 
