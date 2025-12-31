@@ -23,7 +23,7 @@ spec:
                 - "chown -R 1200:1201 /games && chmod -R 775 /games"
           containers:
             - name: job
-              image: theadzik/games-whishlist-job:2025.12.31.2
+              image: theadzik/games-whishlist-job:2025.12.31.3
               imagePullPolicy: IfNotPresent
               volumeMounts:
                 - name: games-wishlist

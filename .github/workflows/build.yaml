@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - main.py
+      - requirements.txt
+      - Dockerfile
   workflow_dispatch:
 
 jobs:
