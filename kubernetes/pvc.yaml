@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: games-wishlist-pvc
+  namespace: wishlist
+spec:
+  storageClassName: "synology-nfs-retain"
+  volumeName: games-wishlist
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
