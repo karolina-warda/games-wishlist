@@ -37,7 +37,7 @@ driver = webdriver.Chrome(service=service, options=options)
 
 games_data_upload = []
 
-with open("./games_data.csv", mode ='r') as file: 
+with open("/games/games_data.csv", mode ='r') as file:
     csvFile = csv.DictReader(file)
     games_data = [line for line in csvFile] 
 
