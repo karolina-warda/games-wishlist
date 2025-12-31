@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: games-wishlist
 spec:
-  schedule: "* * * * *"
+  schedule: "15 0 * * *"
   timeZone: "Europe/Warsaw"
   jobTemplate:
     spec:
