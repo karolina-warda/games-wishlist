@@ -7,6 +7,8 @@ import time
 import pandas as pd
 import csv
 
+CSV_FILE_PATH = "./games/games_data.csv"
+
 def get_element(url):
     try: 
         element = driver.find_element(By.XPATH, url).text
@@ -37,7 +39,7 @@ driver = webdriver.Chrome(service=service, options=options)
 
 games_data_upload = []
 
-with open("/games/games_data.csv", mode ='r') as file:
+with open(CSV_FILE_PATH, mode ='r') as file:
     csvFile = csv.DictReader(file)
     games_data = [line for line in csvFile] 
 
@@ -54,6 +56,11 @@ for game_data in games_data:
 
     driver.get(game_url)
     time.sleep(2)
+
+    try: 
+        image_url = driver.find_element(By.XPATH, '//span[@data-qa="gameBackgroundImage#heroImage"]//img[@data-qa="gameBackgroundImage#heroImage#image"]').get_attribute("src")
+    except NoSuchElementException: 
+        image_url = "https://www.satyakabir.com/no-preview.jpeg"
 
     game_title = get_element('//h1[@data-qa="mfe-game-title#name"]')
     current_price = get_element('//span[@data-qa="mfeCtaMain#offer0#finalPrice"]')
@@ -89,12 +96,12 @@ for game_data in games_data:
                  "current_price":current_price,
                  "final_price":final_price,
                  "normal_price":normal_price,
-                 "game_url":game_url}
+                 "game_url":game_url,
+                 "image_url":image_url}
     
     games_data_upload.append(game_dict)
-    print(game_dict)
 
 df=pd.json_normalize(games_data_upload)
-df.to_csv('games_data.csv', encoding='utf-8', index=False)
+df.to_csv(CSV_FILE_PATH, encoding='utf-8', index=False)
 driver.quit()
 
