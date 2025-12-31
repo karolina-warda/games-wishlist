@@ -16,7 +16,7 @@ jobs:
       - name: Generate Image Tag
         id: generate_tag
         run: |
-          today=(date +'%Y.%m.%d')
+          today=$(date +'%Y.%m.%d')
           tag="$today.${{ github.run_number }}"
           echo "tag=$tag" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
