@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: games-wishlist
 spec:
-  schedule: "* * * * *"
+  schedule: "15 0 * * *"
   timeZone: "Europe/Warsaw"
   jobTemplate:
     spec:
@@ -12,7 +12,7 @@ spec:
         spec:
           initContainers:
             - name: ownership
-              image: busybox:1.35.0
+              image: busybox:1.37.0
               imagePullPolicy: IfNotPresent
               volumeMounts:
                 - name: games-wishlist
