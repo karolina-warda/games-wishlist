@@ -1,4 +1,4 @@
-name: "games-whishlist-job: Build and Push"
+name: "games-wishlist-job: Build and Push"
 on:
   push:
     branches:
@@ -36,4 +36,4 @@ jobs:
           platforms: "linux/amd64"
           context: "{{defaultContext}}"
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/games-whishlist-job:${{ steps.generate_tag.outputs.tag }},${{ vars.DOCKERHUB_USERNAME }}/games-whishlist-job:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/games-wishlist-job:${{ steps.generate_tag.outputs.tag }},${{ vars.DOCKERHUB_USERNAME }}/games-wishlist-job:latest
